@@ -46,9 +46,6 @@ bool checkFormat(int argc, char* argv[], string &downloadLink)
 
 int main(int argc, char* argv[])
 {
-	if (argc != 3)
-		return 1;
-
 	int nRetCode = 0;
 
 	// initialize MFC and print and error on failure
@@ -73,10 +70,10 @@ int main(int argc, char* argv[])
 			return 1;
 		// Tao socket dau tien
 		CSocket cs;
-		Link analyzedLink = analyzeLink(downloadLink);
+		Link analyzedLink(downloadLink);
 
 		establishConnection(cs, analyzedLink);
-		downloadTo(cs, analyzedLink);
+		startDownload(cs, analyzedLink);
 		// Dong ket noi
 		cs.Close();
 	}

@@ -1,12 +1,14 @@
 ﻿  Support.cpp
-c:\codes\visual studio\1512406_1512474\1512406_1512474\support.cpp(28): warning C4018: '<': signed/unsigned mismatch
-c:\codes\visual studio\1512406_1512474\1512406_1512474\support.cpp(36): warning C4018: '<': signed/unsigned mismatch
-c:\codes\visual studio\1512406_1512474\1512406_1512474\support.cpp(65): warning C4996: 'gethostbyname': Use getaddrinfo() or GetAddrInfoW() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
+c:\codes\visual studio\1512406_1512474\1512406_1512474\support.cpp(34): warning C4996: 'gethostbyname': Use getaddrinfo() or GetAddrInfoW() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
   c:\program files (x86)\windows kits\10\include\10.0.14393.0\um\winsock2.h(2216): note: see declaration of 'gethostbyname'
-c:\codes\visual studio\1512406_1512474\1512406_1512474\support.cpp(111): warning C4018: '<': signed/unsigned mismatch
-c:\codes\visual studio\1512406_1512474\1512406_1512474\support.cpp(153): warning C4018: '<': signed/unsigned mismatch
-c:\codes\visual studio\1512406_1512474\1512406_1512474\support.cpp(193): warning C4101: 'downloadSize': unreferenced local variable
-c:\codes\visual studio\1512406_1512474\1512406_1512474\support.cpp(195): warning C4101: 'recvDat': unreferenced local variable
-c:\codes\visual studio\1512406_1512474\1512406_1512474\support.cpp(235): warning C4018: '<': signed/unsigned mismatch
+c:\codes\visual studio\1512406_1512474\1512406_1512474\support.cpp(63): warning C4018: '<': signed/unsigned mismatch
+c:\codes\visual studio\1512406_1512474\1512406_1512474\support.cpp(84): warning C4018: '<': signed/unsigned mismatch
+c:\codes\visual studio\1512406_1512474\1512406_1512474\support.cpp(201): warning C4018: '<': signed/unsigned mismatch
+c:\codes\visual studio\1512406_1512474\1512406_1512474\support.cpp(207): warning C4018: '<': signed/unsigned mismatch
+c:\codes\visual studio\1512406_1512474\1512406_1512474\support.cpp(223): warning C4018: '<': signed/unsigned mismatch
+  Generating Code...
+  Compiling...
+  1512406_1512474.cpp
+  Generating Code...
   1512406_1512474.vcxproj -> C:\Codes\Visual Studio\1512406_1512474\Debug\1512406_1512474.exe
   1512406_1512474.vcxproj -> C:\Codes\Visual Studio\1512406_1512474\Debug\1512406_1512474.pdb (Partial PDB)
