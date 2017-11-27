@@ -19,8 +19,8 @@ using namespace std;
 #define VER11 1
 #define HTTP_HEADER10 " HTTP/1.0\r\n"
 #define HTTP_HEADER11 " HTTP/1.1\r\n"
-#define DOWNLOAD_FILE_OPTION "\r\n\r\nAccept-Encoding: identity\r\n\r\nConnection: keep-alive\r\n\r\n Keep-Alive: 30000\r\n"
-#define DOWNLOAD_FOLDER_INDEX_OPTION "\r\n\r\nUser-Agent: fetch.c\r\n\r\nAccept-Encoding: identity\r\n\r\nConnection: keep-alive\r\n\r\n Keep-Alive: 30000\r\n"
+#define DOWNLOAD_FILE_OPTION "\r\nAccept-Encoding: identity\r\n\r\n"
+#define DOWNLOAD_FOLDER_INDEX_OPTION "\r\nUser-Agent: fetch.c\r\nAccept-Encoding: identity\r\n\r\n"
 #define CHUNKED 1
 #define NORMAL 0
 #define WAIT_TIME 10
@@ -52,9 +52,6 @@ vector<string> split(string data, string token);
 string constructRequest(Link link);
 struct sockaddr_in getAddr(Link link);
 void establishConnection(CSocket & cs, Link link);
-void downloadTo(CSocket &cs, Link link);
-void getFileData(CSocket &cs, ofstream &os);
-void getFolderData(CSocket &cs, ofstream &os);
 vector<string> getCurrentFileList(string targetLink);
 
 void startDownload(CSocket &cs, Link link);

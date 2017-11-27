@@ -16,11 +16,11 @@ extern struct AppSettings appSet;
 bool checkFormat(int argc, char* argv[], string &downloadLink)
 {
 	if (argv[1][0] == '-' && argv[1][0] == '-') {
-		if (strcmp(HTTP_VER10, argv[1])) {
+		if (strcmp(HTTP_VER10, argv[1]) == 0) {
 			appSet.currentVersion = VER10;
 			appSet.httpHeaderVer = HTTP_HEADER10;
 		}
-		else if (strcmp(HTTP_VER11, argv[1])) {
+		else if (strcmp(HTTP_VER11, argv[1]) == 0) {
 			appSet.currentVersion = VER11;
 			appSet.httpHeaderVer = HTTP_HEADER11;
 		}

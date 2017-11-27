@@ -24,8 +24,10 @@ string constructRequest(Link link)
 	string option;
 	if (link.type == FILE_TYPE)
 		option = DOWNLOAD_FILE_OPTION;
-	else
+	else {
 		option = DOWNLOAD_FOLDER_INDEX_OPTION;
+		link.targetName += '/';
+	}
 	return "GET " + link.targetPath + link.targetName + appSet.httpHeaderVer + "Host: " + link.hostName + option;
 }
 
@@ -74,19 +76,48 @@ vector<string> getCurrentFileList(string targetLink)
 void startDownload(CSocket & cs, Link link)
 {
 	if (link.type == FILE_TYPE) {
+		cout << "Downloading File: " << link.normalizedName << endl;
 		downloadFile(cs, link, "");
 	}
 	else {
+		cout << "Downloading Folder: " << link.normalizedLink << endl;
+		string subFolder = string(DEFAULT_LOCATION) + link.targetName + "/";
+		wstring subFolderL(subFolder.begin(),subFolder.end());
+		if (!CreateDirectory(subFolderL.c_str(), NULL)) {
+			int retCode = GetLastError();
+			if (retCode == 183) {
+				remove(subFolder.c_str());
+				if (!CreateDirectory(subFolderL.c_str(), NULL)) {
+					cout << "Folder already exist" << endl;
+				}
+			}
+			else {
+				cout << "Error when create Folder at code: " << retCode << endl;
+				return;
+			}
+		}
 		downloadFile(cs, link, "");
-		string subFolder = DEFAULT_LOCATION + link.targetName;
-		CreateDirectory(CA2W(subFolder.c_str()), NULL);
-		vector<string> fileList = getCurrentFileList(DEFAULT_LOCATION + link.targetName);
+		cout << "Getting File & Folder List Complete. " << endl;
+		vector<string> fileList = getCurrentFileList("1512406_1512474_" + link.normalizedName);
+		cout << "Found " << fileList.size() << " files and folders" << endl;
 		for (int i = 0; i < fileList.size(); i++) {
 			Link fileLink(link.normalizedLink + fileList[i]);
-
-			if (fileLink.type == FOLDER_TYPE)
-				CreateDirectory(CA2W((subFolder + "/" + fileLink.targetName).c_str()), NULL);
+			if (fileLink.type == FOLDER_TYPE) {
+				string subFolderO = subFolder + fileLink.targetName + "/";
+				wstring subFolderLO(subFolderO.begin(), subFolderO.end());
+				if (!CreateDirectory(subFolderLO.c_str(), NULL)) {
+					int retCode = GetLastError();
+					if (retCode == 183)
+						cout << "Folder already exist " << endl;
+					else
+						cout << "Can't Create Folder at Error Code: " << GetLastError() << endl;
+					continue;
+				} 
+				else 
+					cout << "Created Folder: " << fileLink.targetName << endl;
+			}
 			else {
+				cout << "Downloading File: " << fileLink.normalizedName << endl;
 				cs.Close();
 				establishConnection(cs, fileLink);
 				downloadFile(cs, fileLink, subFolder);
@@ -138,7 +169,7 @@ void transferDataNormal(CSocket &cs, ofstream &os, char* buffer, int start, int 
 		std::memset(buffer, 0, BUFFER_SIZE);
 	}
 	Sleep(WAIT_TIME);
-	while ((recvLen = cs.Receive(buffer, BUFFER_SIZE)) > 0) {
+	while ((recvDat < contentLength) && (recvLen = cs.Receive(buffer, BUFFER_SIZE)) > 0) {
 		os.write(buffer, recvLen);
 		updateProgress(recvDat, recvLen, contentLength);
 		std::memset(buffer, 0, BUFFER_SIZE);
@@ -161,9 +192,17 @@ void transferDataChunked(CSocket &cs, ofstream &os, char* buffer, int start, int
 {
 	bool finished = false;
 	int recvDat = 0;
+	int remain = 0;
+	int loop = 0;
 	do {
 		int startChunkSize = start;
-		while (startChunkSize < recvLen) {
+		if (loop > 0 && remain > 0) {
+			start = remain;
+			recvLen -= start;
+			os.write(buffer, start);
+			startChunkSize = start + 2;
+		}
+		while (startChunkSize < recvLen + start) {
 			int chunkSize = 0;
 			int endChunkSize = startChunkSize;
 			string sizeHex = "";
@@ -176,17 +215,29 @@ void transferDataChunked(CSocket &cs, ofstream &os, char* buffer, int start, int
 				break;
 			}
 			chunkSize = stoi(sizeHex, 0, 16);
-			int cpy = recvLen - (endChunkSize + 2);
-			if (chunkSize < cpy)
+			int cpy = recvLen - (endChunkSize + 2 - start);
+			bool goNext = false;
+			if (chunkSize < cpy) {
 				cpy = chunkSize;
+				startChunkSize = chunkSize + 4 + endChunkSize;
+			}
+			else {
+				chunkSize -= cpy;
+				startChunkSize = chunkSize + 2;
+				goNext = true;
+				remain = chunkSize;
+			}
 			os.write(buffer + endChunkSize + 2, cpy);
 			recvDat += cpy;
 			cout << "\rReceived: " << recvDat << "(bytes)";
-			startChunkSize = chunkSize + 4 + endChunkSize;
+			if (goNext)
+				break;
 		}
 		start = 0;
 		Sleep(WAIT_TIME);
-	} while ((recvLen = cs.Receive(buffer, BUFFER_SIZE)) > 0 && !finished);
+		loop++;
+		std::memset(buffer, 0, BUFFER_SIZE);
+	} while (!finished && (recvLen = cs.Receive(buffer, BUFFER_SIZE)) > 0);
 	cout << endl;
 }
 
@@ -207,8 +258,10 @@ Link::Link(string link)
 	for (int i = 1; i < atoms.size(); i++)
 		normalizedName += " " + atoms[i];
 
-	if (link[link.size() - 1] == '/') 
+	if (link[link.size() - 1] == '/') {
 		type = FOLDER_TYPE;
+		normalizedName += ".html";
+	}
 	else
 		type = FILE_TYPE;
 }
