@@ -169,9 +169,14 @@ void transferDataNormal(CSocket &cs, ofstream &os, char* buffer, int start, int 
 		std::memset(buffer, 0, BUFFER_SIZE);
 	}
 	Sleep(WAIT_TIME);
-	while ((recvDat < contentLength) && (recvLen = cs.Receive(buffer, BUFFER_SIZE)) > 0) {
+	while ((contentLength == -1 || recvDat < contentLength) && (recvLen = cs.Receive(buffer, BUFFER_SIZE)) > 0) {
 		os.write(buffer, recvLen);
-		updateProgress(recvDat, recvLen, contentLength);
+		if (contentLength != -1)
+			updateProgress(recvDat, recvLen, contentLength);
+		else {
+			recvDat += recvLen;
+			cout << "\rReceived: " << recvDat << "(bytes)";
+		}
 		std::memset(buffer, 0, BUFFER_SIZE);
 		Sleep(WAIT_TIME);
 	}
@@ -247,6 +252,7 @@ Link::Link(string link)
 	normalizedLink = atoms[atoms.size() - 1];
 
 	atoms = split(normalizedLink, "/");
+	int numComponents = atoms.size();
 	hostName = atoms[0];
 	targetPath = "/";
 	for (int i = 1; i < atoms.size()-1; i++)
@@ -257,8 +263,12 @@ Link::Link(string link)
 	normalizedName = atoms[0];
 	for (int i = 1; i < atoms.size(); i++)
 		normalizedName += " " + atoms[i];
-
-	if (link[link.size() - 1] == '/') {
+	size_t dot = targetName.find('.');
+	if (numComponents == 1 || link[link.size() - 1] == '/' || dot == std::string::npos) {
+		if (link[link.size() - 1] != '/') {
+			targetPath += '/';
+			normalizedLink += '/';
+		}
 		type = FOLDER_TYPE;
 		normalizedName += ".html";
 	}

@@ -29,11 +29,11 @@ bool checkFormat(int argc, char* argv[], string &downloadLink)
 		downloadLink = argv[2];
 	}
 	else {
-		if (strcmp(HTTP_VER10, argv[2])) {
+		if (strcmp(HTTP_VER10, argv[2]) == 0) {
 			appSet.currentVersion = VER10;
 			appSet.httpHeaderVer = HTTP_HEADER10;
 		}
-		else if (strcmp(HTTP_VER11, argv[2])) {
+		else if (strcmp(HTTP_VER11, argv[2]) == 0) {
 			appSet.currentVersion = VER11;
 			appSet.httpHeaderVer = HTTP_HEADER11;
 		}
